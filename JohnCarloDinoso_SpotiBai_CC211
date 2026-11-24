@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Music Streaming Platform</title>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+  <style>
+    :root {
+      --bg-page: #111111;
+      --bg-surface: #181818;
+      --bg-surface-hover: #222222;
+      --text-primary: #eaeaea;
+      --text-secondary: #b0b0b0;
+      --input-light: #d9d9d9;
+      --input-text: #1e1e1e;
+      --ad-green: #0a6e4b;
+      --ad-gold: #f5b942;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg-page);
+      color: var(--text-primary);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Centered canvas container matching Desktop - 2 proportions */
+    .page-wrapper {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 28px 32px 64px;
+    }
+
+    /* Top Navigation Bar */
+    .top-navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 34px;
+    }
+
+    .brand-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex-shrink: 0;
+      border: 1.5px solid #2e2e2e;
+      background: radial-gradient(circle at 30% 30%, #2a2a2a, #141414);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .brand-avatar:hover {
+      transform: scale(1.04);
+      border-color: #666;
+    }
+
+    .brand-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .nav-links-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+      flex: 1;
+      max-width: 470px;
+      gap: 12px;
+    }
+
+    .nav-links-group a {
+      color: var(--text-primary);
+      text-decoration: none;
+      font-size: 0.86rem;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      padding: 6px 10px;
+      border-radius: 999px;
+      transition: color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .nav-links-group a:hover,
+    .nav-links-group a.active {
+      color: #ffffff;
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .search-pill {
+      position: relative;
+      width: 165px;
+      flex-shrink: 0;
+    }
+
+    .search-pill i {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #444444;
+      font-size: 0.78rem;
+      pointer-events: none;
+    }
+
+    .search-pill input {
+      width: 100%;
+      height: 24px;
+      background-color: #dcdcdc;
+      border: none;
+      border-radius: 999px;
+      padding: 2px 12px 2px 28px;
+      font-size: 0.78rem;
+      color: #181818;
+      outline: none;
+      transition: box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+
+    .search-pill input:focus {
+      background-color: #ffffff;
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25);
+    }
+
+    /* Advertisement Banner */
+    .ad-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 64px;
+      transition: opacity 0.28s ease, transform 0.28s ease, margin 0.28s ease;
+    }
+
+    .ad-wrapper.dismissed {
+      opacity: 0;
+      transform: scale(0.97);
+      pointer-events: none;
+      height: 0;
+      margin-bottom: 0;
+      overflow: hidden;
+    }
+
+    .ad-banner {
+      position: relative;
+      width: 100%;
+      max-width: 470px;
+      min-height: 225px;
+      background-color: var(--ad-green);
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+    }
+
+    .ad-banner-img {
+      width: 100%;
+      height: 225px;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Fallback styled advertisement matching Desktop - 2 */
+    .ad-fallback {
+      width: 100%;
+      height: 100%;
+      min-height: 225px;
+      background: linear-gradient(135deg, #0b7450 0%, #07593c 100%);
+      padding: 22px 24px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .ad-headline {
+      font-size: 1.12rem;
+      font-weight: 700;
+      line-height: 1.25;
+      color: #d7f2e3;
+      max-width: 320px;
+      margin: 0;
+      letter-spacing: -0.01em;
+    }
+
+    .ad-bottom-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-top: 12px;
+    }
+
+    .ad-tag {
+      font-size: 0.85rem;
+      color: #d7f2e3;
+      font-weight: 400;
+      opacity: 0.92;
+    }
+
+    .ad-art-card {
+      width: 132px;
+      height: 112px;
+      background-color: var(--ad-gold);
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      flex-shrink: 0;
+    }
+
+    .ad-close-btn {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      width: 24px;
+      height: 24px;
+      border: none;
+      background: rgba(0, 0, 0, 0.15);
+      color: #0b0b0b;
+      font-weight: 700;
+      font-size: 0.85rem;
+      line-height: 1;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 5;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .ad-close-btn:hover {
+      background: rgba(0, 0, 0, 0.35);
+      color: #ffffff;
+    }
+
+    /* Section Titles */
+    .section-heading {
+      font-size: 0.92rem;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 18px;
+      letter-spacing: 0.01em;
+    }
+
+    /* Your Recent Rotation Grid */
+    .recent-section {
+      margin-bottom: 78px;
+    }
+
+    .track-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 6px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.15s ease;
+    }
+
+    .track-card:hover {
+      background-color: var(--bg-surface-hover);
+    }
+
+    .track-card.playing {
+      background-color: #202824;
+    }
+
+    .track-cover-wrap {
+      position: relative;
+      width: 66px;
+      height: 66px;
+      border-radius: 4px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background-color: #262626;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .track-cover-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .play-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.48);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      color: #ffffff;
+      font-size: 1.35rem;
+    }
+
+    .track-card:hover .play-overlay,
+    .track-card.playing .play-overlay {
+      opacity: 1;
+    }
+
+    .track-info {
+      min-width: 0;
+    }
+
+    .track-title {
+      font-size: 0.88rem;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin: 0 0 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .track-artist {
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: var(--text-secondary);
+      margin: 0;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Album/Artist Draggable Carousel */
+    .carousel-section {
+      margin-bottom: 92px;
+    }
+
+    .draggable-carousel {
+      display: flex;
+      gap: 22px;
+      overflow-x: auto;
+      scroll-behavior: auto;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: pan-y;
+      overscroll-behavior-x: contain;
+      padding: 4px 2px 12px;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE/Edge */
+    }
+
+    .draggable-carousel::-webkit-scrollbar {
+      display: none; /* Chrome/Safari */
+    }
+
+    .draggable-carousel.active-drag {
+      cursor: grabbing;
+    }
+
+    .album-slide {
+      flex: 0 0 100px;
+      width: 100px;
+      height: 100px;
+      border-radius: 4px;
+      overflow: hidden;
+      background-color: #242424;
+      position: relative;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .album-slide:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.65);
+    }
+
+    .album-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+      -webkit-user-drag: none;
+    }
+
+    .album-caption {
+      position: absolute;
+      inset: auto 0 0 0;
+      padding: 16px 6px 5px;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.45) 65%, transparent 100%);
+      color: #f3f3f3;
+      font-size: 0.65rem;
+      font-weight: 500;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      pointer-events: none;
+      letter-spacing: 0.01em;
+    }
+
+    /* Footer / Contact Section */
+    .footer-contact {
+      padding-top: 8px;
+    }
+
+    .social-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 26px;
+    }
+
+    .social-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: var(--text-primary);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.2s ease, transform 0.2s ease;
+      width: fit-content;
+    }
+
+    .social-item:hover {
+      color: #ffffff;
+      transform: translateX(3px);
+    }
+
+    .social-circle-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1.5px solid #9e9e9e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      flex-shrink: 0;
+      transition: border-color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .social-item:hover .social-circle-icon {
+      border-color: #ffffff;
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    /* Contact Form matching Desktop - 2 */
+    .contact-form-box {
+      max-width: 245px;
+      margin-left: auto;
+    }
+
+    .wireframe-field {
+      position: relative;
+      background-color: var(--input-light);
+      border-radius: 10px;
+      margin-bottom: 14px;
+      padding: 5px 12px 6px;
+      transition: box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+
+    .wireframe-field:focus-within {
+      background-color: #eaeaea;
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35);
+    }
+
+    .wireframe-field label {
+      display: block;
+      font-size: 0.58rem;
+      font-weight: 600;
+      color: #2b2b2b;
+      margin-bottom: 1px;
+      line-height: 1.1;
+    }
+
+    .wireframe-field input,
+    .wireframe-field textarea {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--input-text);
+      font-size: 0.8rem;
+      font-family: inherit;
+      padding: 0;
+      resize: none;
+    }
+
+    .wireframe-field textarea {
+      min-height: 62px;
+    }
+
+    .send-pill-btn {
+      display: block;
+      margin: 14px auto 0;
+      background-color: var(--input-light);
+      color: #1f1f1f;
+      border: none;
+      border-radius: 999px;
+      padding: 3px 26px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.15s ease;
+    }
+
+    .send-pill-btn:hover {
+      background-color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .send-pill-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Subtle Toast Feedback */
+    .status-toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #222222;
+      color: #f0f0f0;
+      border: 1px solid #383838;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.55);
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      z-index: 1050;
+    }
+
+    .status-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 767.98px) {
+      .page-wrapper {
+        padding: 20px 18px 48px;
+      }
+
+      .top-navbar {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .nav-links-group {
+        order: 3;
+        flex-basis: 100%;
+        max-width: 100%;
+        justify-content: space-between;
+        border-top: 1px solid #222;
+        padding-top: 10px;
+      }
+
+      .search-pill {
+        width: 150px;
+      }
+
+      .contact-form-box {
+        max-width: 100%;
+        margin-top: 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrapper">
+    <!-- Top Navigation -->
+    <header class="top-navbar">
+      <!-- Image 1: Logo / Profile Icon -->
+      <div class="brand-avatar" title="CRL Profile">
+        <img
+          src="assets/profile-logo.jpg"
+          alt="CRL Logo"
+          onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23191919%22/><circle cx=%2250%22 cy=%2250%22 r=%2244%22 fill=%22none%22 stroke=%22%23444%22 stroke-width=%222%22/><text x=%2250%22 y=%2258%22 font-family=%22Georgia, serif%22 font-style=%22italic%22 font-size=%2228%22 fill=%22%23cfcfcf%22 text-anchor=%22middle%22>CRL</text></svg>');"
+        />
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="nav-links-group" aria-label="Primary Navigation">
+        <a href="#home" class="active">Home</a>
+        <a href="#music">Music</a>
+        <a href="#podcast">Podcast</a>
+        <a href="#settings">Settings</a>
+      </nav>
+
+      <!-- Search Bar -->
+      <div class="search-pill">
+        <i class="bi bi-search"></i>
+        <input
+          type="text"
+          id="trackSearchInput"
+          aria-label="Search tracks or artists"
+          placeholder="Search..."
+        />
+      </div>
+    </header>
+
+    <!-- Advertisement Banner Section (Image 3) -->
+    <section class="ad-wrapper" id="adBannerWrapper" aria-label="Advertisement">
+      <div class="ad-banner">
+        <button
+          type="button"
+          class="ad-close-btn"
+          id="closeAdBtn"
+          aria-label="Close advertisement"
+          title="Close advertisement"
+        >
+          X
+        </button>
+
+        <!-- Attempts local image3.png first; falls back seamlessly to the styled banner -->
+        <img
+          src="image3.png"
+          alt="Advertisement Banner"
+          class="ad-banner-img"
+          id="adBannerImg"
+          onerror="this.style.display='none'; document.getElementById('adFallbackBox').style.display='flex';"
+        />
+
+        <div class="ad-fallback" id="adFallbackBox" style="display: none;">
+          <p class="ad-headline">
+            The fan-made ‘I don’t give a s*** what the calendar says, it’s christmas’ playlist is about to be correct for the first time in 2018.
+          </p>
+          <div class="ad-bottom-row">
+            <span class="ad-tag">Advertisement</span>
+            <div class="ad-art-card" aria-hidden="true">
+              <!-- Festive Christmas Tree Vector Illustration -->
+              <svg width="86" height="92" viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="50" cy="96" rx="28" ry="6" fill="#e69d24" />
+                <rect x="44" y="80" width="12" height="15" rx="2" fill="#6b3e26" />
+                <polygon points="50,14 24,46 76,46" fill="#1d7a46" />
+                <polygon points="50,32 18,66 82,66" fill="#17693b" />
+                <polygon points="50,50 14,84 86,84" fill="#125831" />
+                <polygon points="50,6 52.5,12 59,12 53.8,15.8 55.8,22 50,18.2 44.2,22 46.2,15.8 41,12 47.5,12" fill="#fff3b0" />
+                <circle cx="42" cy="40" r="3" fill="#ff595e" />
+                <circle cx="58" cy="38" r="3" fill="#ffca3a" />
+                <circle cx="35" cy="58" r="3.2" fill="#8ac926" />
+                <circle cx="64" cy="59" r="3.2" fill="#ff595e" />
+                <circle cx="48" cy="62" r="3" fill="#ffffff" />
+                <circle cx="30" cy="76" r="3.5" fill="#ffca3a" />
+                <circle cx="52" cy="75" r="3.5" fill="#ff595e" />
+                <circle cx="70" cy="77" r="3.5" fill="#8ac926" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Your Recent Rotation Section -->
+    <section class="recent-section" id="music">
+      <h2 class="section-heading">Your Recent Rotation</h2>
+
+      <div class="row g-3" id="recentTracksGrid">
+        <!-- Row 1, Left: Image 2 -> All Eyez on Me | TUPAC -->
+        <div class="col-12 col-sm-6 track-item" data-search="all eyez on me tupac">
+          <div class="track-card" data-track="All Eyez on Me — TUPAC">
+            <div class="track-cover-wrap">
+              <img
+                src="assets/tupac-all-eyez-on-me.jpg"
+                alt="All Eyez on Me by TUPAC"
+                onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22><rect width=%22120%22 height=%22120%22 fill=%22%231a120b%22/><circle cx=%2260%22 cy=%2256%22 r=%2225%22 fill=%22%238d5b3c%22/><path d=%22M35,44 Q60,34 85,44%22 stroke=%22%23d97706%22 stroke-width=%227%22 fill=%22none%22/><path d=%22M26,120 C32,86 88,86 94,120 Z%22 fill=%22%23b45309%22/></svg>');"
+              />
+              <div class="play-overlay"><i class="bi bi-play-fill"></i></div>
+            </div>
+            <div class="track-info">
+              <p class="track-title">All Eyez on Me</p>
+              <p class="track-artist">TUPAC</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 1, Right: Image 3 -> Ain't Got No Haters | ICE CUBE -->
+        <div class="col-12 col-sm-6 track-item" data-search="aint got no haters ice cube">
+          <div class="track-card" data-track="Ain't Got No Haters — ICE CUBE">
+            <div class="track-cover-wrap">
+              <img
+                src="assets/ice-cube-aint-got-no-haters.jpg"
+                alt="Ain't Got No Haters by ICE CUBE"
+                onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22><rect width=%22120%22 height=%22120%22 fill=%22%23141414%22/><circle cx=%2260%22 cy=%2258%22 r=%2226%22 fill=%22%23b0b0b0%22/><path d=%22M34,42 Q60,26 86,42%22 stroke=%22%23222%22 stroke-width=%2210%22 fill=%22none%22/><path d=%22M26,120 C32,88 88,88 94,120 Z%22 fill=%22%232a2a2a%22/></svg>');"
+              />
+              <div class="play-overlay"><i class="bi bi-play-fill"></i></div>
+            </div>
+            <div class="track-info">
+              <p class="track-title">Ain't Got No Haters</p>
+              <p class="track-artist">ICE CUBE</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2, Left: Image 4 -> Suicidal | YNW Melly -->
+        <div class="col-12 col-sm-6 track-item" data-search="suicidal ynw melly">
+          <div class="track-card" data-track="Suicidal — YNW Melly">
+            <div class="track-cover-wrap">
+              <img
+                src="assets/ynw-melly-suicidal.jpg"
+                alt="Suicidal by YNW Melly"
+                onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22><rect width=%2260%22 height=%22120%22 fill=%22%23e5e0d8%22/><rect x=%2260%22 width=%2260%22 height=%22120%22 fill=%22%232b2623%22/><circle cx=%2238%22 cy=%2256%22 r=%2218%22 fill=%22%235a463a%22/><circle cx=%2282%22 cy=%2256%22 r=%2218%22 fill=%22%237a6252%22/></svg>');"
+              />
+              <div class="play-overlay"><i class="bi bi-play-fill"></i></div>
+            </div>
+            <div class="track-info">
+              <p class="track-title">Suicidal</p>
+              <p class="track-artist">YNW Melly</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2, Right: Image 5 -> President Carter | LIL WAYNE -->
+        <div class="col-12 col-sm-6 track-item" data-search="president carter lil wayne">
+          <div class="track-card" data-track="President Carter — LIL WAYNE">
+            <div class="track-cover-wrap">
+              <img
+                src="assets/lil-wayne-president-carter.jpg"
+                alt="President Carter by LIL WAYNE"
+                onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22><rect width=%22120%22 height=%22120%22 fill=%22%238f9bb3%22/><circle cx=%2260%22 cy=%2264%22 r=%2224%22 fill=%22%236d4c3d%22/><polygon points=%2260,22 24,38 60,52 96,38%22 fill=%22%231e5631%22/><path d=%22M28,118 C32,92 88,92 92,118 Z%22 fill=%22%231e5631%22/></svg>');"
+              />
+              <div class="play-overlay"><i class="bi bi-play-fill"></i></div>
+            </div>
+            <div class="track-info">
+              <p class="track-title">President Carter</p>
+              <p class="track-artist">LIL WAYNE</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 3, Left: Image 6 -> Residuals | CHRIS BROWN -->
+        <div class="col-12 col-sm-6 track-item" data-search="residuals chris brown">
+          <div class="track-card" data-track="Residuals — CHRIS BROWN">
+            <div class="track-cover-wrap">
+              <img
+                src="assets/chris-brown-residuals.jpg"
+                alt="Residuals by CHRIS BROWN"
+                onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22><defs><linearGradient id=%22g1%22 x1=%220%22 y1=%220%22 x2=%220%22 y2=%221%22><stop offset=%220%25%22 stop-color=%22%236ba4d9%22/><stop offset=%22100%25%22 stop-color=%22%23d8e6f2%22/></linearGradient></defs><rect width=%22120%22 height=%22120%22 fill=%22url(%23g1)%22/><circle cx=%2260%22 cy=%2244%22 r=%2210%22 fill=%22%232b2b2b%22/><rect x=%2253%22 y=%2255%22 width=%2214%22 height=%2232%22 rx=%224%22 fill=%22%23c92a2a%22/><rect x=%2254%22 y=%2287%22 width=%225%22 height=%2222%22 fill=%22%23222%22/><rect x=%2261%22 y=%2287%22 width=%225%22 height=%2222%22 fill=%22%23222%22/></svg>');"
+              />
+              <div class="play-overlay"><i class="bi bi-play-fill"></i></div>
+            </div>
+            <div class="track-info">
+              <p class="track-title">Residuals</p>
+              <p class="track-artist">CHRIS BROWN</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 3, Right: Image 7 -> Hit It From The Back! | XXXTENTACION -->
+        <div class="col-12 col-sm-6 track-item" data-search="hit it from the back xxxtentacion">
+          <div class="track-card" data-track="Hit It From The Back! — XXXTENTACION">
+            <div class="track-cover-wrap">
+              <img
+                src="assets/xxxtentacion-hit-it-from-the-back.jpg"
+                alt="Hit It From The Back! by XXXTENTACION"
+                onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22><rect width=%22120%22 height=%22120%22 fill=%22%23d9d9d9%22/><circle cx=%2260%22 cy=%2258%22 r=%2226%22 fill=%22%23555%22/><path d=%22M32,48 Q45,22 60,34 Q75,22 88,48%22 stroke=%22%23111%22 stroke-width=%228%22 fill=%22none%22/><path d=%22M26,120 C32,88 88,88 94,120 Z%22 fill=%22%23222%22/></svg>');"
+              />
+              <div class="play-overlay"><i class="bi bi-play-fill"></i></div>
+            </div>
+            <div class="track-info">
+              <p class="track-title">Hit It From The Back!</p>
+              <p class="track-artist">XXXTENTACION</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Album/Artist Draggable Carousel Section -->
+    <section class="carousel-section" id="podcast">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h2 class="section-heading mb-0">Album/Artist</h2>
+        <span class="text-secondary" style="font-size: 0.72rem; opacity: 0.65;">
+          <i class="bi bi-arrows-expand-vertical" style="transform: rotate(90deg); display: inline-block;"></i> Drag left or right
+        </span>
+      </div>
+
+      <div class="draggable-carousel" id="albumCarousel" aria-label="Album and Artist Draggable Carousel">
+        <!-- Item 1: Image 6 -> Chris Brown -->
+        <div class="album-slide" data-artist="Chris Brown" title="Chris Brown">
+          <img
+            src="assets/chris-brown-residuals.jpg"
+            alt="Chris Brown"
+            onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22><rect width=%22120%22 height=%22120%22 fill=%22%232a3642%22/><polygon points=%2260,15 15,105 105,105%22 fill=%22%23d9e2ec%22/><polygon points=%2260,38 35,95 85,95%22 fill=%22%23486581%22/></svg>');"
+          />
+          <span class="album-caption">Chris Brown</span>
+        </div>
+
+        <!-- Item 2: Image 5 -> LIL WAYNE -->
+        <div class="album-slide" data-artist="LIL WAYNE" title="LIL WAYNE">
+          <img
+            src="assets/lil-wayne-president-carter.jpg"
+            alt="LIL WAYNE"
+            onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22><rect width=%22120%22 height=%22120%22 fill=%22%23e0e0e0%22/><rect x=%2218%22 y=%2224%22 width=%2232%22 height=%2296%22 fill=%22%23222%22/><circle cx=%2234%22 cy=%2236%22 r=%2212%22 fill=%22%23444%22/><rect x=%2264%22 y=%2252%22 width=%2242%22 height=%2268%22 fill=%22%23666%22/></svg>');"
+          />
+          <span class="album-caption">LIL WAYNE</span>
+        </div>
+
+        <!-- Item 3: Image 7 -> XXXTENTACION -->
+        <div class="album-slide" data-artist="XXXTENTACION" title="XXXTENTACION">
+          <img
+            src="assets/xxxtentacion-hit-it-from-the-back.jpg"
+            alt="XXXTENTACION"
+            onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22><rect width=%22120%22 height=%22120%22 fill=%22%23121212%22/><circle cx=%2260%22 cy=%2262%22 r=%2226%22 fill=%22%23525252%22/><path d=%22M30,45 Q60,18 90,45%22 stroke=%22%23262626%22 stroke-width=%2212%22 fill=%22none%22/><text x=%2295%22 y=%2226%22 font-family=%22sans-serif%22 font-size=%2211%22 fill=%22%23999%22 text-anchor=%22end%22>TOP</text></svg>');"
+          />
+          <span class="album-caption">XXXTENTACION</span>
+        </div>
+
+        <!-- Item 4: Image 2 -> TUPAC -->
+        <div class="album-slide" data-artist="TUPAC" title="TUPAC">
+          <img
+            src="assets/tupac-all-eyez-on-me.jpg"
+            alt="TUPAC"
+            onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22><rect width=%22120%22 height=%22120%22 fill=%22%23262626%22/><rect x=%2212%22 y=%2212%22 width=%2296%22 height=%2296%22 fill=%22%23bdbdbd%22/><circle cx=%2260%22 cy=%2254%22 r=%2220%22 fill=%22%23222%22/><path d=%22M26,108 C34,78 86,78 94,108 Z%22 fill=%22%23181818%22/></svg>');"
+          />
+          <span class="album-caption">TUPAC</span>
+        </div>
+
+        <!-- Item 5: Image 4 -> YNW Melly -->
+        <div class="album-slide" data-artist="YNW Melly" title="YNW Melly">
+          <img
+            src="assets/ynw-melly-suicidal.jpg"
+            alt="YNW Melly"
+            onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22><rect width=%22120%22 height=%22120%22 fill=%22%23d4cfc9%22/><polygon points=%220,120 75,35 120,120%22 fill=%22%233a3532%22/><circle cx=%2268%22 cy=%2246%22 r=%2216%22 fill=%22%2378716c%22/></svg>');"
+          />
+          <span class="album-caption">YNW Melly</span>
+        </div>
+
+        <!-- Item 6: Image 3 -> ICE CUBE -->
+        <div class="album-slide" data-artist="ICE CUBE" title="ICE CUBE">
+          <img
+            src="assets/ice-cube-aint-got-no-haters.jpg"
+            alt="ICE CUBE"
+            onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22><rect width=%22120%22 height=%22120%22 fill=%22%23e5e5e5%22/><circle cx=%2256%22 cy=%2256%22 r=%2224%22 fill=%22%23262626%22/><path d=%22M24,120 C30,84 82,84 88,120 Z%22 fill=%22%23171717%22/><text x=%22108%22 y=%2224%22 font-family=%22sans-serif%22 font-weight=%22bold%22 font-size=%2211%22 fill=%22%23111%22 text-anchor=%22end%22>IT IS WHAT</text><text x=%22108%22 y=%2236%22 font-family=%22sans-serif%22 font-weight=%22bold%22 font-size=%2211%22 fill=%22%23111%22 text-anchor=%22end%22>IT IS</text></svg>');"
+          />
+          <span class="album-caption">ICE CUBE</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer / Contact Section -->
+    <footer class="footer-contact" id="settings">
+      <div class="row align-items-start justify-content-between">
+        <!-- Left Column: Social Handles -->
+        <div class="col-12 col-md-6">
+          <ul class="social-list">
+            <li>
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-item">
+                <span class="social-circle-icon"><i class="bi bi-instagram"></i></span>
+                <span>@crl.officialAcccount</span>
+              </a>
+            </li>
+            <li>
+              <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" class="social-item">
+                <span class="social-circle-icon"><i class="bi bi-tiktok"></i></span>
+                <span>@crl.officialAcccount</span>
+              </a>
+            </li>
+            <li>
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="social-item">
+                <span class="social-circle-icon"><i class="bi bi-facebook"></i></span>
+                <span>crl.officialAcccount</span>
+              </a>
+            </li>
+            <li>
+              <a href="mailto:crl.officialAcccount@gmail.com" class="social-item">
+                <span class="social-circle-icon"><i class="bi bi-google"></i></span>
+                <span>crl.officialAcccount@gmail.com</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Right Column: Contact Form -->
+        <div class="col-12 col-md-6">
+          <form class="contact-form-box" id="contactForm" novalidate>
+            <div class="wireframe-field">
+              <label for="contactName">Name</label>
+              <input type="text" id="contactName" name="name" required />
+            </div>
+
+            <div class="wireframe-field">
+              <label for="contactEmail">Email</label>
+              <input type="email" id="contactEmail" name="email" required />
+            </div>
+
+            <div class="wireframe-field">
+              <label for="contactMessage">Message</label>
+              <textarea id="contactMessage" name="message" rows="3" required></textarea>
+            </div>
+
+            <button type="submit" class="send-pill-btn">Send</button>
+          </form>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="status-toast" id="statusToast" role="status" aria-live="polite"></div>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Toast Notification Helper
+      const toastEl = document.getElementById('statusToast');
+      let toastTimer;
+
+      function showToast(message) {
+        toastEl.textContent = message;
+        toastEl.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          toastEl.classList.remove('show');
+        }, 2800);
+      }
+
+      // 2. Dismissible Advertisement Banner
+      const closeAdBtn = document.getElementById('closeAdBtn');
+      const adBannerWrapper = document.getElementById('adBannerWrapper');
+
+      if (closeAdBtn && adBannerWrapper) {
+        closeAdBtn.addEventListener('click', () => {
+          adBannerWrapper.classList.add('dismissed');
+        });
+      }
+
+      // 3. Track Playback Toggle & Live Search Filter
+      const trackCards = document.querySelectorAll('.track-card');
+      trackCards.forEach((card) => {
+        card.addEventListener('click', () => {
+          const isAlreadyPlaying = card.classList.contains('playing');
+          trackCards.forEach((c) => {
+            c.classList.remove('playing');
+            const icon = c.querySelector('.play-overlay i');
+            if (icon) icon.className = 'bi bi-play-fill';
+          });
+
+          if (!isAlreadyPlaying) {
+            card.classList.add('playing');
+            const icon = card.querySelector('.play-overlay i');
+            if (icon) icon.className = 'bi bi-pause-fill';
+            showToast(`Now Playing: ${card.dataset.track}`);
+          } else {
+            showToast('Playback paused');
+          }
+        });
+      });
+
+      const searchInput = document.getElementById('trackSearchInput');
+      const trackItems = document.querySelectorAll('.track-item');
+
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          const query = e.target.value.trim().toLowerCase();
+          trackItems.forEach((item) => {
+            const haystack = item.dataset.search || '';
+            item.style.display = haystack.includes(query) ? '' : 'none';
+          });
+        });
+      }
+
+      // 4. Draggable, continuously rotating Album/Artist Carousel
+      const carousel = document.getElementById('albumCarousel');
+
+      if (carousel) {
+        // Duplicate the artist tiles so the carousel can rotate seamlessly.
+        const originalSlides = Array.from(carousel.children);
+        originalSlides.forEach((slide) => {
+          const clone = slide.cloneNode(true);
+          clone.setAttribute('aria-hidden', 'true');
+          clone.classList.add('carousel-clone');
+          carousel.appendChild(clone);
+        });
+
+        let isDragging = false;
+        let hasDragged = false;
+        let startX = 0;
+        let startScrollLeft = 0;
+        let pointerId = null;
+        let isPaused = false;
+        let previousFrameTime = 0;
+        const rotationSpeed = 28; // pixels per second
+
+        const pauseRotation = () => { isPaused = true; };
+        const resumeRotation = () => {
+          isPaused = false;
+          previousFrameTime = 0;
+        };
+
+        // Smooth, seamless auto-rotation. The duplicated half is reset invisibly.
+        const rotateCarousel = (time) => {
+          if (!previousFrameTime) previousFrameTime = time;
+          const delta = Math.min((time - previousFrameTime) / 1000, 0.05);
+          previousFrameTime = time;
+
+          if (!isPaused && !isDragging) {
+            const loopPoint = carousel.scrollWidth / 2;
+            carousel.scrollLeft += rotationSpeed * delta;
+            if (loopPoint > 0 && carousel.scrollLeft >= loopPoint) {
+              carousel.scrollLeft -= loopPoint;
+            }
+          }
+          requestAnimationFrame(rotateCarousel);
+        };
+        requestAnimationFrame(rotateCarousel);
+
+        carousel.addEventListener('mouseenter', pauseRotation);
+        carousel.addEventListener('mouseleave', resumeRotation);
+        carousel.addEventListener('focusin', pauseRotation);
+        carousel.addEventListener('focusout', resumeRotation);
+
+        // Pointer dragging works with a mouse, touch screen, or stylus.
+        carousel.addEventListener('pointerdown', (e) => {
+          if (e.pointerType === 'mouse' && e.button !== 0) return;
+          isDragging = true;
+          hasDragged = false;
+          pointerId = e.pointerId;
+          startX = e.clientX;
+          startScrollLeft = carousel.scrollLeft;
+          carousel.classList.add('active-drag');
+          pauseRotation();
+          carousel.setPointerCapture(pointerId);
+        });
+
+        carousel.addEventListener('pointermove', (e) => {
+          if (!isDragging || e.pointerId !== pointerId) return;
+          const distance = e.clientX - startX;
+          if (Math.abs(distance) > 5) hasDragged = true;
+          if (hasDragged) {
+            e.preventDefault();
+            const loopPoint = carousel.scrollWidth / 2;
+            carousel.scrollLeft = startScrollLeft - distance * 1.35;
+
+            // Keep manual dragging seamless across either end of the loop.
+            if (loopPoint > 0 && carousel.scrollLeft < 0) {
+              carousel.scrollLeft += loopPoint;
+              startScrollLeft += loopPoint;
+            } else if (loopPoint > 0 && carousel.scrollLeft >= loopPoint) {
+              carousel.scrollLeft -= loopPoint;
+              startScrollLeft -= loopPoint;
+            }
+          }
+        });
+
+        const finishDragging = (e) => {
+          if (!isDragging || (e && e.pointerId !== pointerId)) return;
+          isDragging = false;
+          pointerId = null;
+          carousel.classList.remove('active-drag');
+          // Keep rotation paused briefly after a drag, then resume automatically.
+          window.setTimeout(() => {
+            if (!carousel.matches(':hover') && !carousel.contains(document.activeElement)) {
+              resumeRotation();
+            }
+          }, 900);
+        };
+
+        carousel.addEventListener('pointerup', finishDragging);
+        carousel.addEventListener('pointercancel', finishDragging);
+        carousel.addEventListener('lostpointercapture', finishDragging);
+
+        // Avoid selecting an artist when the user's gesture was actually a drag.
+        carousel.querySelectorAll('.album-slide:not(.carousel-clone)').forEach((slide) => {
+          slide.addEventListener('click', (e) => {
+            if (hasDragged) {
+              e.preventDefault();
+              e.stopPropagation();
+              hasDragged = false;
+              return;
+            }
+            const artist = slide.dataset.artist;
+            if (artist) showToast(`Selected Artist: ${artist}`);
+          });
+        });
+
+        // Cloned tiles are decorative copies, not separate selectable artists.
+        carousel.querySelectorAll('.carousel-clone').forEach((slide) => {
+          slide.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          });
+        });
+      }
+
+      // 5. Contact Form Submission
+      const contactForm = document.getElementById('contactForm');
+      if (contactForm) {
+        contactForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const nameVal = document.getElementById('contactName').value.trim();
+          const emailVal = document.getElementById('contactEmail').value.trim();
+          const msgVal = document.getElementById('contactMessage').value.trim();
+
+          if (!nameVal || !emailVal || !msgVal) {
+            showToast('Please fill out Name, Email, and Message.');
+            return;
+          }
+
+          showToast(`Thanks ${nameVal}! Your message has been sent.`);
+          contactForm.reset();
+        });
+      }
+    });
+  </script>
+</body>
+</html>
