@@ -1,0 +1,58 @@
+[README.md](https://github.com/user-attachments/files/35399468/README.md)
+# CRL Music Streaming Website
+
+A responsive, dark-themed music streaming website built with HTML, CSS, JavaScript, and Bootstrap 5.
+
+## Project contents
+
+- `index.html` — main website page, styles, and interactive JavaScript.
+- `assets/` — image files used by the website (if included in this project folder).
+
+## How to run
+
+1. Download and extract the project ZIP file.
+2. Keep `index.html` and the `assets` folder together in the same project folder.
+3. Open `index.html` in a modern web browser (such as Chrome, Edge, Firefox, or Safari).
+
+No build step or local server is required for the basic website.
+
+## Website features
+
+- Dark-themed layout.
+- CRL logo/profile image in the top navigation.
+- Home, Music, Podcast, and Settings navigation links.
+- Search field for filtering the recent-rotation tracks.
+- Dismissible advertisement banner.
+- Recent Rotation section with six tracks and their cover images.
+- Track-card play/pause interaction with on-screen status feedback.
+- Album/Artist carousel with continuous automatic rotation.
+- Seamless carousel looping and mouse/touch dragging.
+- Carousel pauses while the pointer is over it and resumes after interaction.
+- Contact form with basic required-field validation and status feedback.
+
+## External dependencies
+
+The page loads these resources from public CDNs:
+
+- Bootstrap 5.3.3 CSS and JavaScript
+- Bootstrap Icons 1.11.3
+- Google Fonts (Inter)
+
+An internet connection is needed for these external resources to load. Locally stored images should remain in the project folder.
+
+## Customizing the website
+
+- To change text, navigation labels, track titles, or artist names, edit the corresponding HTML in `index.html`.
+- To replace a picture, update the relevant image `src` path and place the replacement image in the project folder.
+- To adjust colors, spacing, or layout, edit the CSS in the `<style>` section of `index.html`.
+- To adjust carousel speed, find `rotationSpeed` in the carousel JavaScript. Its value is measured in pixels per second.
+
+## Notes
+
+- The play/pause controls provide front-end interaction and status feedback; this project does not include an audio streaming backend or actual audio files.
+- The contact form currently displays a confirmation message in the browser. It is not connected to an email service or server.
+- The search field filters the six recent-rotation entries; it does not search an online music catalog.
+
+## License
+
+No separate license is included with this project. Make sure you have permission to use any images, logos, music, or other media you add or distribute.
